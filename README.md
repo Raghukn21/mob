@@ -1,46 +1,56 @@
-import cv2
-import time
-import imutils
+# Real-Time Motion Detection System 🚀
 
-cam = cv2.VideoCapture(0)
-time.sleep(0)
+A lightweight Python application that detects moving objects in a live video stream using OpenCV. It utilizes Gaussian blurring and frame differencing to identify changes in the environment and highlights moving objects with bounding boxes.
 
-firstFrame=None
-area = 500
+## 🛠️ Features
+- **Real-time Detection**: Processes live camera feed with minimal latency.
+- **Dynamic Thresholding**: Uses Binary Thresholding and Dilation to reduce noise.
+- **Contour Analysis**: Filters small movements (noise) by setting a minimum area threshold.
+- **Visual Feedback**: Displays "Normal" or "Moving Object Detected" status directly on the video feed.
 
-while True:
-    _,img = cam.read()
-    text = "Normal"
-    img = imutils.resize(img, width=500)
+## 📸 How it Works
+1. **Background Subtraction**: The first frame captured is used as a baseline.
+2. **Preprocessing**: Frames are converted to grayscale and blurred to remove high-frequency noise.
+3. **Absolute Difference**: The system calculates the difference between the baseline and the current frame.
+4. **Contour Mapping**: If the difference exceeds a threshold, a bounding box is drawn around the movement.
 
-    grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gaussianImg = cv2.GaussianBlur(grayImg, (21, 21), 0)
+## 🚀 Getting Started
 
-    if firstFrame is None:
-        firstFrame = gaussianImg
-        continue
-    imgDiff = cv2.absdiff(firstFrame, gaussianImg)
+### Prerequisites
+- Python 3.x
+- A working webcam
 
-    threshImg = cv2.threshold(imgDiff, 25, 255, cv2.THRESH_BINARY) [1]
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/YOUR_USERNAME/Motion-Detection-OpenCV.git](https://github.com/YOUR_USERNAME/Motion-Detection-OpenCV.git)
+   cd Motion-Detection-OpenCV
+2. Install dependencies:
 
-    threshImg = cv2.dilate(threshImg, None, iterations=2)
+Bash
+pip install opencv-python imutils
+Usage
+Run the script:
 
-    cnts = cv2.findContours(threshImg.copy(), cv2.RETR_EXTERNAL,
-                            cv2.CHAIN_APPROX_SIMPLE)
+Bash
+python main.py
+Press 'q' to exit the application.
 
-    cnts = imutils.grab_contours(cnts)
-    for c in cnts:
-        if cv2.contourArea(c) < area:
-            continue
-        (x, y, w, h) = cv2.boundingRect(c)
-        cv2.rectangle(img, (x,y), (x + w, y + h), (0, 255, 0), 2)
-        text = "Moving Object detected"
-    print(text)
-    cv2.putText(img, text, (10, 20),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-    cv2.imshow("cameraFeed",img)
-    key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):
-        break
-cam.release()
-cv2.destroyAllWindows()
+📝 Configuration
+You can adjust the sensitivity by modifying these variables in main.py:
+
+area = 500: Increase this value to ignore smaller objects (like pets or moving curtains).
+
+cv2.GaussianBlur(..., (21, 21), 0): Adjust the kernel size to change blurring intensity.
+
+⚖️ License
+Distributed under the MIT License. See LICENSE for more information.
+
+
+---
+
+## 📦 requirements.txt
+Create this file so others can install your dependencies easily:
+```text
+opencv-python
+imutils
